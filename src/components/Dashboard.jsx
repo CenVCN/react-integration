@@ -1,27 +1,31 @@
 import React, { useEffect, useState } from "react";
 
-const Dashboard = ({ token }) => {
+const Dashboard = () => {
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
+  const token = localStorage.getItem("token"); 
   useEffect(() => {
     const fetchNotes = async () => {
       try {
         const response = await fetch("http://localhost:3000/notes", {
-          headers: { Authorization: token },
+          headers: { Authorization: `Bearer ${token}` }, 
         });
 
         if (response.ok) {
           const data = await response.json();
+          console.log(data);
           setNotes(data);
+        } else {
+          console.error("Failed to fetch notes");
         }
       } catch (error) {
         console.error("Error fetching notes:", error);
       }
     };
 
-    fetchNotes();
+    if (token) fetchNotes();
   }, [token]);
 
   const addNote = async (e) => {
@@ -30,7 +34,7 @@ const Dashboard = ({ token }) => {
       const response = await fetch("http://localhost:3000/notes", {
         method: "POST",
         headers: {
-          Authorization: token,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ title, content }),
@@ -39,6 +43,10 @@ const Dashboard = ({ token }) => {
       if (response.ok) {
         const newNote = await response.json();
         setNotes([...notes, newNote]);
+        setTitle(""); // Reset input fields
+        setContent("");
+      } else {
+        console.error("Failed to add note");
       }
     } catch (error) {
       console.error("Error adding note:", error);
@@ -49,16 +57,22 @@ const Dashboard = ({ token }) => {
     try {
       const response = await fetch(`http://localhost:3000/notes/${id}`, {
         method: "DELETE",
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {
         setNotes(notes.filter((note) => note.id !== id));
+      } else {
+        console.error("Failed to delete note");
       }
     } catch (error) {
       console.error("Error deleting note:", error);
     }
   };
+
+  if (!token) {
+    return <p>Please log in to view your dashboard.</p>;
+  }
 
   return (
     <div>

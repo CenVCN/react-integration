@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 const Login = ({ setToken }) => {
   const [email, setEmail] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +19,9 @@ const Login = ({ setToken }) => {
 
       if (response.ok) {
         setToken(data.token);
+        localStorage.setItem("token", data.token);
         alert("Login successful!");
+        navigate('/dashboard');
       } else {
         alert(data.message || "Login failed!");
       }

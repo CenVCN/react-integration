@@ -1,8 +1,14 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 const Registration = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const navigate = useNavigate();
+
+  const goToLogin = () => {
+    navigate('/login');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,6 +56,11 @@ const Registration = () => {
         </label>
         <button type="submit">Register</button>
       </form>
+
+      <button onClick={goToLogin}>
+        Already have an account? Go to Login
+      </button>
+      
     </div>
   );
 };
